@@ -36,12 +36,12 @@ public class DottoreServiceImpl implements DottoreService{
 
 	@Override
 	public Dottore inserisciNuovo(Dottore input) {
-		return repository.save(null);
+		return repository.save(input);
 	}
 
 	@Override
 	public Dottore aggiorna(Dottore input) {
-		return repository.save(null);
+		return repository.save(input);
 	}
 
 	@Override

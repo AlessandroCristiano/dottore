@@ -1,5 +1,6 @@
 package it.prova.dottore.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,11 +14,17 @@ public class Dottore {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@Column(name = "nome")
 	private String nome;
+	@Column(name = "cognome")
 	private String cognome;
+	@Column(name = "codiceDottore")
 	private String codiceDottore;
+	@Column(name = "codFiscalePazienteAttualmenteInVisita")
 	private String codFiscalePazienteAttualmenteInVisita;
+	@Column(name = "inVisita")
 	private Boolean inVisita;
+	@Column(name = "inServizio")
 	private Boolean inServizio;
 	
 	
@@ -33,6 +40,15 @@ public class Dottore {
 		this.cognome = cognome;
 		this.codiceDottore = codiceDottore;
 		this.codFiscalePazienteAttualmenteInVisita = codFiscalePazienteAttualmenteInVisita;
+		this.inVisita = inVisita;
+		this.inServizio = inServizio;
+	}
+
+	public Dottore(String nome, String cognome, String codiceDottore, Boolean inVisita, Boolean inServizio) {
+		super();
+		this.nome = nome;
+		this.cognome = cognome;
+		this.codiceDottore = codiceDottore;
 		this.inVisita = inVisita;
 		this.inServizio = inServizio;
 	}
