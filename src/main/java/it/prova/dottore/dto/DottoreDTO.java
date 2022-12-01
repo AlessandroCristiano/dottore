@@ -1,7 +1,10 @@
 package it.prova.dottore.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import it.prova.dottore.model.Dottore;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DottoreDTO {
 	
 	private Long id;
