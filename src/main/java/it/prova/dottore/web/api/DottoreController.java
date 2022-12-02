@@ -1,7 +1,8 @@
-package it.prova.dottore.controller.api;
+package it.prova.dottore.web.api;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.prova.dottore.dto.DottoreDTO;
+import it.prova.dottore.model.Dottore;
 import it.prova.dottore.service.DottoreService;
+import it.prova.dottore.web.api.exception.IdNotNullForInsertException;
+import it.prova.dottore.web.api.exception.NotFoundException;
+
 
 @RestController
 @RequestMapping("/api/dottore")
@@ -27,28 +32,49 @@ public class DottoreController {
 
 	@GetMapping
 	public List<DottoreDTO> listAll(){
-		return service.findAll().stream().map(dottore -> DottoreDTO.buildDottoreDTOFromModel(dottore)).collect(Collectors.toList());
+		return DottoreDTO.createDottoreDTOListFromModelList(service.findAll());
 	}
 	
 	@GetMapping("/{id}")
 	public DottoreDTO findById(@PathVariable(name = "id", required = true) Long id) {
-		return DottoreDTO.buildDottoreDTOFromModel(service.findById(id));
+		Dottore result = service.findById(id);
+		
+		if (result == null)
+		throw new NotFoundException("Dottore non trovato con id: " + id);
+		
+		return DottoreDTO.buildDottoreDTOFromModel(result);
 	}
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public DottoreDTO createNew(@RequestBody DottoreDTO input) {
+		if (input.getId() != null)
+			throw new IdNotNullForInsertException("Non è ammesso fornire un id per la creazione");
+
 		return DottoreDTO.buildDottoreDTOFromModel(service.inserisciNuovo(input.buildDottoreModel()));
 	}
 	
-	@PutMapping
-	public DottoreDTO update (@RequestBody DottoreDTO input) {
-		return DottoreDTO.buildDottoreDTOFromModel(service.aggiorna(input.buildDottoreModel()));
+	@PutMapping("/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public DottoreDTO update(@Valid @RequestBody DottoreDTO dottore, @PathVariable(required = true) Long id) {
+		Dottore dottoreDaAggiornare = service.findById(id);
+
+		if (dottoreDaAggiornare == null)
+			throw new NotFoundException("Dottore not found con id: " + id);
+
+		dottoreDaAggiornare.setId(id);
+		Dottore pazienteAggiornato = service.aggiorna(dottore.buildDottoreModel());
+		return DottoreDTO.buildDottoreDTOFromModel(pazienteAggiornato);
 	}
 	
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable(name = "id", required = true) Long id) {
+		Dottore dottore = service.findById(id);
+
+		if (dottore == null)
+			throw new NotFoundException("Dottore non trovato con id: " + id);
+
 		service.rimuovi(id);
 	}	
 	

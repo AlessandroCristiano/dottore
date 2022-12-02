@@ -1,5 +1,8 @@
 package it.prova.dottore.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import it.prova.dottore.model.Dottore;
@@ -116,5 +119,11 @@ public class DottoreDTO {
 		return new DottoreDTO(model.getId(), model.getNome(), model.getCognome(), model.getCodiceDottore(),
 				model.getCodFiscalePazienteAttualmenteInVisita(), model.getInVisita(), model.getInServizio());
 	}	
+	
+	public static List<DottoreDTO> createDottoreDTOListFromModelList(List<Dottore> modelListInput) {
+		return modelListInput.stream().map(inputEntity -> {
+			return DottoreDTO.buildDottoreDTOFromModel(inputEntity);
+		}).collect(Collectors.toList());
+	}
 
 }
