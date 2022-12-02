@@ -50,4 +50,18 @@ public class DottoreServiceImpl implements DottoreService{
 		
 	}
 
+	@Override
+	public void impostaInVisita(Dottore dottore, String codiceFiscalePaziente) {
+		dottore.setInVisita(true);
+		dottore.setCodFiscalePazienteAttualmenteInVisita(codiceFiscalePaziente);
+		repository.save(dottore);
+	}
+
+	@Override
+	public void terminaVisita(Dottore dottore) {
+		dottore.setCodFiscalePazienteAttualmenteInVisita(null);
+		dottore.setInVisita(false);
+		repository.save(dottore);
+		
+	}
 }

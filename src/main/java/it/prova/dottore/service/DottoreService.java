@@ -17,5 +17,9 @@ public interface DottoreService {
 	Dottore aggiorna(Dottore input);
 
 	void rimuovi(Long id);
+	
+	void impostaInVisita(Dottore dottore, String codiceFiscalePaziente);
+	
+	void terminaVisita(Dottore dottore);
 
 }

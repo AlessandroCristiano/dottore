@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.prova.dottore.dto.DottoreDTO;
+import it.prova.dottore.dto.DottoreRequestDTO;
 import it.prova.dottore.model.Dottore;
 import it.prova.dottore.service.DottoreService;
+import it.prova.dottore.web.api.exception.DottoreImpegnatoException;
+import it.prova.dottore.web.api.exception.DottoreNonAssegnatoAlPazienteException;
 import it.prova.dottore.web.api.exception.IdNotNullForInsertException;
 import it.prova.dottore.web.api.exception.NotFoundException;
 
@@ -79,6 +82,45 @@ public class DottoreController {
 	}	
 	
 	
-	//DEVI AGGIUNGE I METODI: /assegnaPaziente
+	//DEVI AGGIUNGE I METODI: /verifica
+	
+	@GetMapping("/verifica/{codiceDottore}")
+	@ResponseStatus(HttpStatus.OK)
+	public DottoreRequestDTO verifica(@PathVariable(name = "codiceDottore", required = true) String codiceDottore) {
 
+		Dottore dottoreInstance = service.findByCodice(codiceDottore);
+
+		if (dottoreInstance.getInVisita() || dottoreInstance.getCodFiscalePazienteAttualmenteInVisita() != null) {
+			throw new DottoreImpegnatoException("Dottore ha gia un paziente");
+		}
+
+		return new DottoreRequestDTO(codiceDottore, null);
+	}
+	
+	@PostMapping("/impostaInVisita")
+	public DottoreRequestDTO impostaInVisita(@RequestBody DottoreRequestDTO input) {
+
+		Dottore dottoreInstance = service.findByCodice(input.getCodiceDottore());
+
+		if (dottoreInstance.getInVisita() || dottoreInstance.getCodFiscalePazienteAttualmenteInVisita() != null) {
+			throw new DottoreImpegnatoException("Dottore ha gia un paziente");
+		}
+		dottoreInstance.setCodFiscalePazienteAttualmenteInVisita(input.getCodiceFiscale());
+		service.impostaInVisita(dottoreInstance, dottoreInstance.getCodFiscalePazienteAttualmenteInVisita());
+		return input;
+	}
+
+	@PostMapping("/terminaVisita")
+	public void terminaVisita(@RequestBody DottoreRequestDTO input) {
+
+		Dottore dottoreInstance = service.findByCodice(input.getCodiceDottore());
+
+		if (!dottoreInstance.getInVisita() || !dottoreInstance.getCodFiscalePazienteAttualmenteInVisita()
+				.equals(input.getCodiceFiscale())) {
+			throw new DottoreNonAssegnatoAlPazienteException(
+					"Impossibile procedere: paziente e dottore non corrispondono");
+		}
+		
+		service.terminaVisita(dottoreInstance);
+	}
 }
