@@ -25,7 +25,6 @@ import it.prova.dottore.web.api.exception.DottoreNonAssegnatoAlPazienteException
 import it.prova.dottore.web.api.exception.IdNotNullForInsertException;
 import it.prova.dottore.web.api.exception.NotFoundException;
 
-
 @RestController
 @RequestMapping("/api/dottore")
 public class DottoreController {
@@ -34,20 +33,20 @@ public class DottoreController {
 	private DottoreService service;
 
 	@GetMapping
-	public List<DottoreDTO> listAll(){
+	public List<DottoreDTO> listAll() {
 		return DottoreDTO.createDottoreDTOListFromModelList(service.findAll());
 	}
-	
+
 	@GetMapping("/{id}")
 	public DottoreDTO findById(@PathVariable(name = "id", required = true) Long id) {
 		Dottore result = service.findById(id);
-		
+
 		if (result == null)
-		throw new NotFoundException("Dottore non trovato con id: " + id);
-		
+			throw new NotFoundException("Dottore non trovato con id: " + id);
+
 		return DottoreDTO.buildDottoreDTOFromModel(result);
 	}
-	
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public DottoreDTO createNew(@RequestBody DottoreDTO input) {
@@ -56,7 +55,7 @@ public class DottoreController {
 
 		return DottoreDTO.buildDottoreDTOFromModel(service.inserisciNuovo(input.buildDottoreModel()));
 	}
-	
+
 	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public DottoreDTO update(@Valid @RequestBody DottoreDTO dottore, @PathVariable(required = true) Long id) {
@@ -69,7 +68,7 @@ public class DottoreController {
 		Dottore pazienteAggiornato = service.aggiorna(dottore.buildDottoreModel());
 		return DottoreDTO.buildDottoreDTOFromModel(pazienteAggiornato);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable(name = "id", required = true) Long id) {
@@ -79,11 +78,10 @@ public class DottoreController {
 			throw new NotFoundException("Dottore non trovato con id: " + id);
 
 		service.rimuovi(id);
-	}	
-	
-	
-	//DEVI AGGIUNGE I METODI: /verifica
-	
+	}
+
+	// DEVI AGGIUNGE I METODI: /verifica
+
 	@GetMapping("/verifica/{codiceDottore}")
 	@ResponseStatus(HttpStatus.OK)
 	public DottoreRequestDTO verifica(@PathVariable(name = "codiceDottore", required = true) String codiceDottore) {
@@ -96,7 +94,7 @@ public class DottoreController {
 
 		return new DottoreRequestDTO(codiceDottore, null);
 	}
-	
+
 	@PostMapping("/impostaInVisita")
 	public DottoreRequestDTO impostaInVisita(@RequestBody DottoreRequestDTO input) {
 
@@ -115,12 +113,12 @@ public class DottoreController {
 
 		Dottore dottoreInstance = service.findByCodice(input.getCodiceDottore());
 
-		if (!dottoreInstance.getInVisita() || !dottoreInstance.getCodFiscalePazienteAttualmenteInVisita()
+		if (!dottoreInstance.getInVisita()|| !dottoreInstance.getCodFiscalePazienteAttualmenteInVisita()
 				.equals(input.getCodiceFiscale())) {
 			throw new DottoreNonAssegnatoAlPazienteException(
 					"Impossibile procedere: paziente e dottore non corrispondono");
 		}
-		
+
 		service.terminaVisita(dottoreInstance);
 	}
 }
