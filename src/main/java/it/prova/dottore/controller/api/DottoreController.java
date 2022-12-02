@@ -51,5 +51,8 @@ public class DottoreController {
 	public void delete(@PathVariable(name = "id", required = true) Long id) {
 		service.rimuovi(id);
 	}	
+	
+	
+	//DEVI AGGIUNGE I METODI: /assegnaPaziente
 
 }

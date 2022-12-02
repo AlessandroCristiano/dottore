@@ -15,6 +15,19 @@ public class DottoreDTO {
 	private Boolean inVisita;
 	private Boolean inServizio;
 
+	public DottoreDTO() {
+		super();
+	}
+
+	public DottoreDTO(String nome, String cognome, String codiceDottore, Boolean inVisita, Boolean inServizio) {
+		super();
+		this.nome = nome;
+		this.cognome = cognome;
+		this.codiceDottore = codiceDottore;
+		this.inVisita = inVisita;
+		this.inServizio = inServizio;
+	}
+
 	public DottoreDTO(String nome, String cognome, String codiceDottore, String codFiscalePazienteAttualmenteInVisita,
 			Boolean inVisita, Boolean inServizio) {
 		super();

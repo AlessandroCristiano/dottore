@@ -25,7 +25,7 @@ public class DottoreServiceImpl implements DottoreService{
 	@Override
 	@Transactional(readOnly = true)
 	public Dottore findById(Long id) {
-		return repository.findById(null).orElse(null);
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
